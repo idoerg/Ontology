@@ -1,9 +1,20 @@
+<<<<<<< HEAD
+Revision history of Ontology module
+
+2016-02-07
+
+Data.py: added restrictions on edge types that may be used to generate
+ancestors.  get_ancestors and therefore _get_reachable uses, by default,
+only "is_a" and "part_of" as edges through which to propagate through
+ancestors.
+=======
 
 Data.py: added restriciton on edge types that may be used to generate
 ancestors. 
 
 get_ancestors and therefore _get_reachable uses, by default, only "is_a"
 and "part_of" as edges through which to propagate for ancesotrs.
+>>>>>>> 3529e20f097342b13f91e478a734cbcd88184a08
 
 OboIO.py: added "alt_id". Now the GO alt_id can be used as a key to get
 the GO node.
