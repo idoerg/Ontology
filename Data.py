@@ -64,7 +64,7 @@ class OntologyGraph(DiGraph):
         node = self.get_node(oid)
         res = set()
         for edge in node.succ:
-            if accepted_edges and (edge.data in accepted_edges):
+            if (not accepted_edges) or (accepted_edges and (edge.data in accepted_edges)):
                 res.add(edge.to_node.label)
         return res
 
