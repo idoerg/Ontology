@@ -2,6 +2,10 @@
 # This code is part of the Biopython distribution and governed by its
 # license.  Please see the LICENSE file that should have been included
 # as part of this package.
+#
+# Additions by Iddo Friedberg, 2016
+# 2/2016: added support for edge types in get_parents and 
+#         _get_reachable
 
 """
 Module with classes representing ontologies and annotation data.
@@ -52,11 +56,15 @@ class OntologyGraph(DiGraph):
 #            res.add(edge.to_node.label)
 #        return res
     
-    def get_parents(self, oid, accepted_types=set({"is_a","part_of"}):
+    def get_parents(self, oid, accepted_edges=set({"is_a","part_of"})):
+        """
+        Gets parent node, along accepted edges.
+        If the accepted_edges set is empty, all edge types are acceptable.
+        """
         node = self.get_node(oid)
         res = set()
         for edge in node.succ:
-            if edge.data in accepted_types:
+            if accepted_edges and (edge.data in accepted_edges):
                 res.add(edge.to_node.label)
         return res
 
@@ -139,6 +147,46 @@ class OntologyGraph(DiGraph):
             
             return nxgraph
             
+    def _get_reachable(self, node, accepted_edges=set({"part_of","is_a"})):
+        """
+        Gets ids of all nodes reachable from given node. Finds cycles along the way.
+        Uses only accepted edges
+        If the accepted_edges set is empty or None, all edges are accepted.
+
+        Parameters
+        ----------
+        node - node which descendants we want to obtain.
+        """
+        if DiGraph._REACHABLE in node.attr:
+            return ([], node.attr[DiGraph._REACHABLE])
+        else:
+            my_set = set()
+            
+            if DiGraph._IS_VISITED in node.attr:
+                in_cycle = [node.label]
+            else:
+                node.attr[DiGraph._IS_VISITED] = None
+                
+                in_cycle = []
+                for edge in node.succ:
+                    if accepted_edges and (edge.data not in accepted_edges):
+                        continue
+                    up_cycle, up_set = self._get_reachable(edge.to_node)
+                    if len(up_cycle) > 0:
+                        if up_cycle[0] == node.label:
+                            # we closed the cycle
+                            self.cycles.append(up_cycle)
+                        else:
+                            up_cycle.append(node.label)
+                            in_cycle = up_cycle
+                        up_set |= my_set
+                        my_set = up_set # we are binding sets of reachable nodes of every node in cycle
+                    else:
+                        my_set |= up_set
+                    my_set.add(edge.to_node.label)
+                node.attr[DiGraph._REACHABLE] = my_set
+                node.attr.pop(DiGraph._IS_VISITED)
+            return (in_cycle, my_set)
 class OntologyTerm(object):
     """
     Represents ontology term.
