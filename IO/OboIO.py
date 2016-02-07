@@ -151,6 +151,11 @@ def terms_to_graph(terms):
                         found_relations.add(p[0])
                     else:
                         raise ValueError("Incorrect relationship: " + edge)
+            if "alt_id" in data:
+#                node = g.get_node(nid)
+                for alt_id in data["alt_id"]:
+                    g.alt_ids[alt_id].add(nid)
+
         elif term_type == "Typedef":
             rid = data["id"][0]
             g.typedefs[rid] = data
