@@ -12,6 +12,7 @@ from __future__ import print_function
 from Ontology.Graph import DiGraph
 import copy
 import sys
+from collections import defaultdict
 
 class OntologyGraph(DiGraph):
     """
@@ -22,11 +23,13 @@ class OntologyGraph(DiGraph):
         DiGraph.__init__(self)
         self.typedefs = {}
         self.synonyms = {}
+        self.alt_ids = defaultdict(set)
         
     def get_node(self, u):
         x = self.nodes.get(u)
         if x is None:
-            return self.synonyms.get(u)
+            return self.nodes.get(self.alt_ids[u])
+#            return self.synonyms.get(u)
         else:
             return x
     
@@ -41,13 +44,22 @@ class OntologyGraph(DiGraph):
         _, res = self._get_reachable(node)
         return copy.copy(res) # return copy so user won't disturb cached values
 
-    def get_parents(self, oid):
+#    def get_parents(self, oid):
+        # Old get_parents, takes any edge type
+#        node = self.get_node(oid)
+#        res = set()
+#        for edge in node.succ:
+#            res.add(edge.to_node.label)
+#        return res
+    
+    def get_parents(self, oid, accepted_types=set({"is_a","part_of"}):
         node = self.get_node(oid)
         res = set()
         for edge in node.succ:
-            res.add(edge.to_node.label)
+            if edge.data in accepted_types:
+                res.add(edge.to_node.label)
         return res
-    
+
     def get_relationship_types(self):
         return list(self.typedefs.keys())
         
