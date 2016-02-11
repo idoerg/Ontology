@@ -27,7 +27,9 @@ class OntologyGraph(DiGraph):
         DiGraph.__init__(self)
         self.typedefs = {}
         self.synonyms = {}
-        self.alt_ids = defaultdict(set)
+#        self.alt_ids = defaultdict(set)
+        self.alt_ids = {}
+        self.namespace = {}
         
     def get_node(self, u):
         x = self.nodes.get(u)
@@ -38,7 +40,7 @@ class OntologyGraph(DiGraph):
             return x
     
     def node_exists(self, u):
-        return u in self.nodes or u in self.synonyms
+        return u in self.nodes or u in self.alt_ids
     
     def get_term(self, oid):
         return self.get_node(oid).data
@@ -187,6 +189,7 @@ class OntologyGraph(DiGraph):
                 node.attr[DiGraph._REACHABLE] = my_set
                 node.attr.pop(DiGraph._IS_VISITED)
             return (in_cycle, my_set)
+
 class OntologyTerm(object):
     """
     Represents ontology term.
