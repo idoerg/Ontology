@@ -50,6 +50,12 @@ class OntologyGraph(DiGraph):
         _, res = self._get_reachable(node)
         return copy.copy(res) # return copy so user won't disturb cached values
 
+    def get_ids(self):
+        return list(self.nodes) + list(self.alt_ids)
+
+    def get_namespace(self,oid):
+        return self.namespace[oid]
+
 #    def get_parents(self, oid):
         # Old get_parents, takes any edge type
 #        node = self.get_node(oid)

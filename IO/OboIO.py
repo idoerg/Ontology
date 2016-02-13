@@ -168,7 +168,8 @@ def terms_to_graph(terms):
         raise ValueError("Not defined relationships found: " + str(not_defined))
     
     g.typedefs["is_a"] = _IS_A_TYPE
-    
+    for alt_id in g.alt_ids:
+        g.namespace[alt_id] = g.namespace[g.alt_ids[alt_id]]
     return g
 
 class OboReader(OntoReader):
