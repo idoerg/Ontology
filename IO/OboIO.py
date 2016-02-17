@@ -165,7 +165,7 @@ def terms_to_graph(terms):
     # validate whether all relationships were defined
     not_defined = found_relations.difference(defined_relations)
     if len(not_defined) > 0:
-        raise ValueError("Not defined relationships found: " + str(not_defined))
+        raise ValueError("Undefined relationships found: " + str(not_defined))
     
     g.typedefs["is_a"] = _IS_A_TYPE
     for alt_id in g.alt_ids:
